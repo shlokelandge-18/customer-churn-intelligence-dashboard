@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction - Technical Project Documentation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        @media print {
+            body { font-size: 11pt; color: #000; background: #fff; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            border-bottom: 2px solid #0284c7;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 26pt;
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+        .header .meta {
+            font-size: 11pt;
+            color: #64748b;
+        }
+        .btn-print {
+            background: #0284c7;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            float: right;
+        }
+        .btn-print:hover { background: #0369a1; }
+        h2 {
+            font-size: 16pt;
+            color: #0f172a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 { font-size: 13pt; color: #334155; margin-top: 20px; }
+        p, li { font-size: 11pt; color: #334155; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10.5pt;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        tr:nth-child(even) { background: #f8fafc; }
+        .badge-green { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+        .badge-red { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+        .img-container { text-align: center; margin: 25px 0; }
+        .img-container img { max-width: 100%; height: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 9.5pt;
+        }
+        pre {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            font-size: 9.5pt;
+        }
+        .callout {
+            background: #eff6ff;
+            border-left: 4px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-print no-print" onclick="window.print()">📥 Print / Save as PDF</button>
+
+    <div class="header">
+        <h1>Customer Churn Prediction & Risk Intelligence System</h1>
+        <div class="meta">
+            <strong>Technical Project Documentation & Specification</strong><br>
+            Author: Shlok | Tech Stack: Python 3.13, Scikit-Learn, Pandas, Flask, Matplotlib
+        </div>
+    </div>
+
+    <h2>1. Executive Summary</h2>
+    <p>
+        Customer attrition (churn) directly impacts enterprise profitability. This project implements a lightweight, high-performance Data Science pipeline that predicts customer churn in real time with <strong>79.7% ROC-AUC</strong>, isolates the top attrition drivers, and automates prescriptive retention strategies. The entire workflow executes in under 2 seconds on standard CPU hardware with zero external cloud dependencies.
+    </p>
+
+    <h2>2. Dataset Specification</h2>
+    <p>The dataset consists of 1,200 customer records across 11 key attributes spanning demographics, account details, contracted services, and billing behavior.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Feature Name</th>
+                <th>Data Type</th>
+                <th>Description</th>
+                <th>Sample Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>Age</code></td>
+                <td>Integer</td>
+                <td>Customer age</td>
+                <td>18 - 70</td>
+            </tr>
+            <tr>
+                <td><code>TenureMonths</code></td>
+                <td>Integer</td>
+                <td>Duration of subscription in months</td>
+                <td>1 - 72</td>
+            </tr>
+            <tr>
+                <td><code>Contract</code></td>
+                <td>Categorical</td>
+                <td>Contract commitment model</td>
+                <td>Month-to-month, One year, Two year</td>
+            </tr>
+            <tr>
+                <td><code>InternetService</code></td>
+                <td>Categorical</td>
+                <td>Connection technology</td>
+                <td>Fiber optic, DSL, No</td>
+            </tr>
+            <tr>
+                <td><code>TechSupport</code></td>
+                <td>Categorical</td>
+                <td>Technical assistance subscription</td>
+                <td>Yes, No</td>
+            </tr>
+            <tr>
+                <td><code>MonthlyCharges</code></td>
+                <td>Float</td>
+                <td>Current monthly fee</td>
+                <td>$18.00 - $120.00</td>
+            </tr>
+            <tr>
+                <td><code>TotalCharges</code></td>
+                <td>Float</td>
+                <td>Cumulative revenue collected</td>
+                <td>$20.00 - $8,000.00</td>
+            </tr>
+            <tr>
+                <td><code>Churn</code></td>
+                <td>Binary (Target)</td>
+                <td>Attrition label</td>
+                <td>0 = Retained, 1 = Churned</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>3. Machine Learning Architecture & Preprocessing</h2>
+    <div class="callout">
+        <strong>Strict Data Hygiene:</strong> An 80/20 stratified split is performed before preprocessing to ensure zero data leakage from test sets into the training distribution.
+    </div>
+    <p>Features are transformed dynamically via a unified Scikit-Learn <code>ColumnTransformer</code>:</p>
+    <ul>
+        <li><strong>StandardScaler:</strong> Applied to numerical attributes (<code>Age</code>, <code>TenureMonths</code>, <code>MonthlyCharges</code>, <code>TotalCharges</code>) to normalize variance to unit standard deviation.</li>
+        <li><strong>OneHotEncoder:</strong> Applied to categorical attributes with <code>drop='first'</code> to eliminate multicollinearity (dummy variable trap).</li>
+    </ul>
+
+    <h2>4. Model Benchmarking & Diagnostic Results</h2>
+    <p>Three distinct classification paradigms were trained and evaluated on identical test splits:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Paradigm</th>
+                <th>Accuracy</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>ROC-AUC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Logistic Regression (Champion)</strong></td>
+                <td>Linear Log-Odds</td>
+                <td><strong>76.7%</strong></td>
+                <td><strong>71.4%</strong></td>
+                <td><strong>50.0%</strong></td>
+                <td><strong>0.588</strong></td>
+                <td><strong>0.797</strong></td>
+            </tr>
+            <tr>
+                <td>Random Forest</td>
+                <td>Ensemble Bagging</td>
+                <td>74.2%</td>
+                <td>70.5%</td>
+                <td>38.8%</td>
+                <td>0.500</td>
+                <td>0.761</td>
+            </tr>
+            <tr>
+                <td>Gradient Boosting</td>
+                <td>Ensemble Boosting</td>
+                <td>72.9%</td>
+                <td>60.9%</td>
+                <td>52.5%</td>
+                <td>0.564</td>
+                <td>0.760</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="img-container">
+        <img src="outputs/evaluation_dashboard.png" alt="Evaluation Dashboard">
+        <p style="font-size: 9.5pt; color: #64748b;">Figure 1: Benchmark Comparison, Confusion Matrix, ROC Analysis, and Top Churn Drivers.</p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>5. Actionable Retention Engine</h2>
+    <p>The system converts raw posterior probabilities into three operational risk bands:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Risk Band</th>
+                <th>Probability Range</th>
+                <th>Customer Profile Attributes</th>
+                <th>Automated Prescriptive Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge-green">LOW RISK</span></td>
+                <td>0.0% - 34.9%</td>
+                <td>Tenure > 24 mos, Multi-year contract, Active Tech Support</td>
+                <td>Maintain standard cadence. Apply loyalty perk discounts and referral bonuses.</td>
+            </tr>
+            <tr>
+                <td><span class="badge-yellow">MODERATE RISK</span></td>
+                <td>35.0% - 64.9%</td>
+                <td>Tenure 6-18 mos, 1-Year contract, fluctuating usage</td>
+                <td>Automated preventative check-in email. Free 60-day tech support trial.</td>
+            </tr>
+            <tr>
+                <td><span class="badge-red">HIGH RISK</span></td>
+                <td>65.0% - 100.0%</td>
+                <td>New customer (&lt; 4 mos), Month-to-month, High monthly charges</td>
+                <td>Immediate priority outreach by Customer Success Manager. Offer 20% discount on 1-year commitment.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>6. Interactive Web Deployment</h2>
+    <p>
+        The model is wrapped in a standalone micro-dashboard using Flask. Users can interactively test input vectors and receive immediate risk evaluations via a REST endpoint (<code>/predict_api</code>).
+    </p>
+    <pre>
+# Command to run Web Dashboard:
+python churn_predictor/app.py
+# Access in browser at: http://127.0.0.1:5000
+    </pre>
+
+    <h2>7. Summary & Future Work</h2>
+    <p>
+        This project proves that effective machine learning does not require bloated infrastructure or expensive cloud resources. Logistic regression combined with sound feature engineering provided industry-standard discrimination (0.797 ROC-AUC) while running in under 2 seconds.
+    </p>
+    <p>
+        <strong>Future Enhancements:</strong> Incorporation of Cox Proportional Hazard survival modeling for precise time-to-event estimation, plus direct webhook integrations with CRM platforms (Salesforce / HubSpot).
+    </p>
+
+</body>
+</html>

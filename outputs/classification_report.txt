@@ -1,0 +1,11 @@
+CHAMPION MODEL: Logistic Regression
+========================================
+
+              precision    recall  f1-score   support
+
+    Retained       0.78      0.90      0.84       160
+     Churned       0.71      0.50      0.59        80
+
+    accuracy                           0.77       240
+   macro avg       0.75      0.70      0.71       240
+weighted avg       0.76      0.77      0.75       240
